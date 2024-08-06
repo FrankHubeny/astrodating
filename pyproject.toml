@@ -1,0 +1,57 @@
+[build-system]
+requires = ["setuptools", "versioneer[toml]"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "VSLpy"
+dynamic = ["version"]
+dependencies = [
+]
+requires-python = ">=3.12"
+authors = [
+  {name = "Frank Hubeny", email = "frankhubeny@protonmail.com"},
+]
+maintainers = [
+  {name = "Frank Hubeny", email = "frankhubeny@protonmail.com"}
+]
+description = "Utilities supporting a Variable Speed of Light"
+readme = {file = "README.md", content-type = "text/markdown"}
+license = {file = "LICENSE.md"}
+keywords = ["light speed", "variable speed of light"]
+classifiers = [
+  # How mature is this project? Common values are
+  #   3 - Alpha
+  #   4 - Beta
+  #   5 - Production/Stable
+  "Development Status :: 3 - Beta",
+
+  # Indicate who your project is intended for
+  "Intended Audience :: astronomers",
+  "Topic :: Astronomy :: Cosmology",
+
+  # Pick your license as you wish (see also "license" above)
+  "License :: OSI Approved :: BSD 3-Clause",
+
+  # Specify the Python versions you support here.
+  "Programming Language :: Python :: 3.12",
+]
+
+#[project.optional-dependencies]
+#gui = ["Jupyter Lab"],
+#]
+
+[project.urls]
+# Homepage = "https://example.com"
+# Documentation = "https://readthedocs.org"
+# Repository = "https://github.com/me/spam.git"
+# "Bug Tracker" = "https://github.com/me/spam/issues"
+# Changelog = "https://github.com/me/spam/blob/master/CHANGELOG.md"
+
+[project.scripts]
+# spam-cli = "spam:main_cli"
+
+[project.gui-scripts]
+# spam-gui = "spam:main_gui"
+
+[project.entry-points."spam.magical"]
+# tomatoes = "spam:main_tomatoes"
