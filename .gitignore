@@ -151,6 +151,9 @@ dmypy.json
 # pytype static type analyzer
 .pytype/
 
+# added FH
+_version.py
+
 # Cython debug symbols
 cython_debug/
 
