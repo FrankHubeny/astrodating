@@ -1,11 +1,13 @@
 [build-system]
-requires = ["setuptools", "versioneer[toml]"]
+requires = ["setuptools >= 69.2"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "VSLpy"
+name = "vslpy"
+# version = "2020.0.0"
 dynamic = ["version"]
 dependencies = [
+  "astropy>6.1.2"
 ]
 requires-python = ">=3.12"
 authors = [
@@ -14,44 +16,35 @@ authors = [
 maintainers = [
   {name = "Frank Hubeny", email = "frankhubeny@protonmail.com"}
 ]
-description = "Utilities supporting a Variable Speed of Light"
-readme = {file = "README.md", content-type = "text/markdown"}
-license = {file = "LICENSE.md"}
-keywords = ["light speed", "variable speed of light"]
+description = "Variable Speed of Light Cosmologies"
+readme = "README.md"
+license = {file = "LICENSE"}
+keywords = ["variable", "speed of light", "cosmology"]
 classifiers = [
-  # How mature is this project? Common values are
-  #   3 - Alpha
-  #   4 - Beta
-  #   5 - Production/Stable
-  "Development Status :: 3 - Beta",
-
-  # Indicate who your project is intended for
-  "Intended Audience :: astronomers",
-  "Topic :: Astronomy :: Cosmology",
-
-  # Pick your license as you wish (see also "license" above)
-  "License :: OSI Approved :: BSD 3-Clause",
-
-  # Specify the Python versions you support here.
-  "Programming Language :: Python :: 3.12",
+  "Development Status :: 3 - Alpha",
+  "Programming Language :: Python",
+  "License :: OSI Approved :: BSD-3-Clause"
 ]
 
-#[project.optional-dependencies]
-#gui = ["Jupyter Lab"],
+[project.optional-dependencies]
+#gui = ["PyQt5"]
+#cli = [
+#  "rich",
+#  "click",
 #]
 
 [project.urls]
-# Homepage = "https://example.com"
-# Documentation = "https://readthedocs.org"
-# Repository = "https://github.com/me/spam.git"
-# "Bug Tracker" = "https://github.com/me/spam/issues"
-# Changelog = "https://github.com/me/spam/blob/master/CHANGELOG.md"
+#Homepage = "https://example.com"
+#Documentation = "https://readthedocs.org"
+Repository = "https://github.com/FrankHubeny/vslpy.git"
+"Bug Tracker" = "https://github.com/FrankHubeny/vslpy/issues"
+#Changelog = "https://github.com/me/spam/blob/master/CHANGELOG.md"
 
 [project.scripts]
-# spam-cli = "spam:main_cli"
+#spam-cli = "spam:main_cli"
 
 [project.gui-scripts]
-# spam-gui = "spam:main_gui"
+#spam-gui = "spam:main_gui"
 
 [project.entry-points."spam.magical"]
-# tomatoes = "spam:main_tomatoes"
+#tomatoes = "spam:main_tomatoes"
