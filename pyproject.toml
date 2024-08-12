@@ -3,7 +3,15 @@ requires = ["setuptools >= 69.2"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools_scm]
-#version_file = "vslpy/_version.py"
+version_file = "vslpy/_version.py"
+
+[tool.ruff]
+select = [
+    "E", # pycodestyle errors
+    "W", # pycodestyle warnings
+    "F", # pyflakes. "E" + "W" + "F" + "C90" (mccabe complexity) is equivalent to flake8
+    "I", # isort
+]
 
 [project]
 name = "vslpy"
@@ -12,7 +20,7 @@ dynamic = ["version"]
 dependencies = [
   "astropy>6.1.2"
 ]
-requires-python = ">=3.12"
+requires-python = ">=3.10"
 authors = [
   {name = "Frank Hubeny", email = "frankhubeny@protonmail.com"},
 ]
@@ -25,8 +33,12 @@ license = {file = "LICENSE"}
 keywords = ["variable", "speed of light", "cosmology"]
 classifiers = [
   "Development Status :: 3 - Alpha",
-  "Programming Language :: Python",
-  "License :: OSI Approved :: BSD-3-Clause"
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: BSD-3-Clause",
+  "Intended Audience :: Science/Research",
+  "Operating System :: OS Independent",
+  "Topic :: Scientific/Engineering :: Astronomy",
+  "Topic :: Scientific/Engineering :: Physics"
 ]
 
 [project.optional-dependencies]
