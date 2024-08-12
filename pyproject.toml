@@ -1,52 +1,44 @@
-[build-system]
-requires = ["setuptools >= 69.2"]
-build-backend = "setuptools.build_meta"
-
-[tool.setuptools_scm]
-version_file = "vslpy/_version.py"
-
-[tool.ruff]
-select = [
-    "E", # pycodestyle errors
-    "W", # pycodestyle warnings
-    "F", # pyflakes. "E" + "W" + "F" + "C90" (mccabe complexity) is equivalent to flake8
-    "I", # isort
-]
-
 [project]
 name = "vslpy"
-#version = "v0.0.1-beta"
-dynamic = ["version"]
-dependencies = [
-  "astropy>6.1.2"
+dynamic = [
+    "version"
 ]
-requires-python = ">=3.10"
+description = "Variable Speed of Light Cosmologies"
+readme = "README.md"
 authors = [
-  {name = "Frank Hubeny", email = "frankhubeny@protonmail.com"},
+    { name = "Frank Hubeny", email = "frankhubeny@protonmail.com" }
 ]
 maintainers = [
   {name = "Frank Hubeny", email = "frankhubeny@protonmail.com"}
 ]
-description = "Variable Speed of Light Cosmologies"
-readme = "README.md"
-license = {file = "LICENSE"}
-keywords = ["variable", "speed of light", "cosmology"]
+license = { text = "BSD-3-Clause" }
+requires-python = ">=3.10"
 classifiers = [
-  "Development Status :: 3 - Alpha",
-  "Programming Language :: Python :: 3",
-  "License :: OSI Approved :: BSD-3-Clause",
-  "Intended Audience :: Science/Research",
-  "Operating System :: OS Independent",
-  "Topic :: Scientific/Engineering :: Astronomy",
-  "Topic :: Scientific/Engineering :: Physics"
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Astronomy",
+    "Topic :: Scientific/Engineering :: Physics",
 ]
-
-[project.optional-dependencies]
-#gui = ["PyQt5"]
-#cli = [
-#  "rich",
-#  "click",
-#]
+keywords = [
+    "astronomy",
+    "astrophysics",
+    "cosmology",
+    "space",
+    "science",
+    "units",
+    "modeling",
+    "models",
+    "fitting",
+]
+dependencies = [
+    "numpy>=1.23",
+    "pyerfa>=2.0.1.1",
+    "astropy-iers-data>=0.2024.7.29.0.32.7",
+    "PyYAML>=3.13",
+    "packaging>=19.0",
+]
 
 [project.urls]
 #Homepage = "https://example.com"
@@ -54,6 +46,70 @@ classifiers = [
 Repository = "https://github.com/FrankHubeny/vslpy.git"
 "Bug Tracker" = "https://github.com/FrankHubeny/vslpy/issues"
 #Changelog = "https://github.com/me/spam/blob/master/CHANGELOG.md"
+
+[build-system]
+requires = ["setuptools",
+            "setuptools_scm>=6.2"
+]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+include-package-data = true
+license-files = ["LICENSE", "licenses/*.rst"]
+
+[tool.setuptools_scm]
+write_to = "vslpy/_version.py"
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+testpaths = [
+    "vslpy",
+    "docs",
+]
+norecursedirs = [
+]
+vslpy_header = true
+doctest_plus = "enabled"
+text_file_format = "rst"
+remote_data_strict = true
+addopts = [
+    "--color=yes",
+    "--doctest-rst",
+    "--strict-config",
+    "--strict-markers",
+    "-p no:legacypath",
+]
+log_cli_level = "info"
+xfail_strict = true
+filterwarnings = [
+    "error",
+    "ignore:unclosed <socket:ResourceWarning",
+    "ignore:unclosed <ssl.SSLSocket:ResourceWarning",
+    # Can be removed once Python>=3.11 is the minimum dependency,
+    # cf. https://github.com/astropy/astropy/issues/13907
+    "ignore:unclosed transport <asyncio.sslproto",
+    "ignore:numpy\\.ufunc size changed:RuntimeWarning",
+    "ignore:numpy\\.ndarray size changed:RuntimeWarning",
+    "ignore:matplotlibrc text\\.usetex:UserWarning:matplotlib",
+    # https://github.com/h5py/h5py/pull/2416
+    "ignore:__array__ implementation doesn't accept a copy keyword:DeprecationWarning",
+]
+doctest_norecursedirs = [
+]
+doctest_subpackage_requires = [
+]
+markers = [
+]
+
+[tool.ruff]
+lint.select = ["ALL"]
+
+[project.optional-dependencies]
+#gui = ["PyQt5"]
+#cli = [
+#  "rich",
+#  "click",
+#]
 
 [project.scripts]
 #spam-cli = "spam:main_cli"
