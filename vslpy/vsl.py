@@ -10,7 +10,7 @@ class VSL:
     This version is not part of the plan for the actual package.  It only contains
     sample code to check the implication of pre-commits and continuous integration.
     """
-
+    
     def __init__(self: "VSL", name: str) -> None:
         """Initialize the VSL clase."""
         self.name = name
