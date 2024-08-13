@@ -67,6 +67,11 @@ repos:
         args: ["--fix", "--show-fixes"]
       - id: ruff-format
 
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: ''  # Use the sha / tag you want to point at
+    hooks:
+      - id: mypy
+
   #- repo: https://github.com/scientific-python/cookie
   #  rev: 2024.04.23
   #  hooks:
