@@ -7,10 +7,11 @@ from astropy import constants as const
 class VSL:
     """Class for testing package setup with documentation and automation.
 
-    This version is not part of the plan for the actual package.  It only contains
-    sample code to check the implication of pre-commits and continuous integration.
+    This version is not part of the plan for the actual package.  It
+    only contains sample code to check the implication of pre-commits
+    and continuous integration.
     """
-    
+
     def __init__(self: "VSL", name: str) -> None:
         """Initialize the VSL clase."""
         self.name = name
@@ -19,7 +20,7 @@ class VSL:
         """Return the string value."""
         return self.name
 
-    #@u.quantity_input(speedfactor: u.dimensionless_unscaled)
+    # @u.quantity_input(speedfactor: u.dimensionless_unscaled)
     def lightspeed(self: "VSL", speedfactor: float = 1) -> float:
         """Return the speed of light based on a variable speed factor.
 
@@ -34,5 +35,3 @@ class VSL:
 
         """
         return speedfactor * const.C
-
-
