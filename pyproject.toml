@@ -102,6 +102,8 @@ doctest_subpackage_requires = [
 markers = [
 ]
 
+[tool.mypy]
+
 [tool.ruff]
 lint.select = ["ALL"]
 
