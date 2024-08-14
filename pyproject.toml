@@ -63,6 +63,7 @@ write_to = "vslpy/_version.py"
 [tool.pytest.ini_options]
 minversion = "7.0"
 testpaths = [
+    "tests",
     "src",
     "docs",
 ]
