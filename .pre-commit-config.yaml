@@ -77,6 +77,13 @@ repos:
     hooks:
       - id: prettier
 
+  - repo: https://github.com/adamchainz/blacken-docs
+    rev: "" # replace with latest tag on GitHub
+    hooks:
+      - id: blacken-docs
+        additional_dependencies:
+          - black==22.12.0
+
   #- repo: https://github.com/scientific-python/cookie
   #  rev: 2024.04.23
   #  hooks:
