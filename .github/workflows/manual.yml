@@ -30,3 +30,9 @@ jobs:
     # Runs a single command using the runners shell
     - name: Send greeting
       run: echo "Hello ${{ inputs.name }}"
+
+# To conform with sp-repo-review standard GH102
+# https://learn.scientific-python.org/development/guides/gha-basic/#advanced-usage
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
