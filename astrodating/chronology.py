@@ -20,102 +20,8 @@ __all__ = [
     'Chronology',
 ]
 
-KEYS = {
-    'ACTORS' : 'Actors',
-    'BEGIN' : 'Begin',
-    'CALENDAR' : 'Calendar',
-    'DESCRIPTION' : 'Description',
-    'DISPLAYNAME' : 'Display Name',
-    'END' : 'End',
-    'EVENTS' : 'Events',
-    'FEMALE' : 'Female',
-    'FILE' : 'File Name',
-    'MALE' : 'Male',
-    'NAME' : 'Name',
-    'PERIODS' : 'Periods',
-    'UNIT' : 'Unit',
-}
-
-AREAS = {
-    'ASSYRIA' : 'Assyria',
-    'BABYLONIA' : 'Babylonia',
-    'EGYPT' : 'Egypt',
-    'ISRAEL' : 'Israel',
-}
-
-# Date and time units from https://numpy.org/doc/stable/reference/arrays.datetime.html
-DATETIMES = {
-    'ATTOSECOND' : 'as',
-    'DAY' : 'D',
-    'FEMTOSECOND' : 'fs',
-    'HOUR' : 'h',
-    'MICROSECOND' : 'us',
-    'MILLISECOND' : 'ms',
-    'MINUTE' : 'm',
-    'MONTH' : 'M',
-    'NANOSECOND' : 'ns',
-    'PICOSECOND' : 'ps',
-    'SECOND' : 's',
-    'WEEK' : 'W',
-    'YEAR' : 'Y',
-}
-
 CONSTANTS = {
     'DATETIME_EPOCH': 1970,
-}
-
-CHRONOLOGIES = [
-    ['BYZANTINE', 'LXX', 'chronologies/byzantine.txt'],
-    ['SMITH', 'ABR', 'chronologies/smith.txt'],
-    ['PETROVICH', 'ABR', 'chronologies/petrovich.txt'],
-]
-CHRONOLOGIES_INDEX = {
-    'NAME' : 0,
-    'DESCRIPTION' : 1,
-    'FILENAME' : 2,
-}
-
-EVENTS = {
-    'Creation': {'Area' : AREAS['ISRAEL'], 'Text' : 'Genesis 1'},
-    'Flood': {'Area' : AREAS['ISRAEL'], 'Text' : 'Genesis 6-9'},
-    'Babel': {'Area' : AREAS['ISRAEL'], 'Text' : 'Genesis 11'},
-    'Sojourn': {'Area' : AREAS['ISRAEL'], 'Text' : 'Genesis 49'},
-    'Exodus': {'Area' : AREAS['ISRAEL'], 'Text' : 'Exodus'},
-}
-ACTORS = {}
-PERIODS = {
-    'Neolithic (Stone)': {},
-    'Chalcolithic (Copper)' : {},
-    'Early Chalcolithic' : {},
-    'Late Chalcolithic' : {},
-    'Early Bronze I' : {},
-    'Early Bronze IA' : {},
-    'Early Bronze IB' : {},
-    'Early Bronze II' : {},
-    'Early Bronze III' : {},
-    'Early Bronze IV' : {},
-    'Intermediate Bronze' : {},
-    'Middle Bronze' : {},
-    'Middle Bronze IA' : {},
-    'Middle Bronze IIA' : {},
-    'Middle Bronze IIB' : {},
-    'Middle Bronze IIC' : {},
-    'Late Bronze' : {},
-    'Late Bronze I' : {},
-    'Late Bronze IIA' : {},
-    'Late Bronze IIB' : {},
-    'Iron' : {},
-    'Iron I' : {},
-    'Iron IA' : {},
-    'Iron IB' : {},
-    'Iron IC' : {},
-    'Iron II' : {},
-    'Iron IIA' : {},
-    'Iron IIB' : {},
-    'Iron IIC' : {},
-    'Iron III' : {},
-    'Babylonian' : {},
-    'Hellenistic' : {},
 }
 
 CALENDARS = {
@@ -149,6 +55,67 @@ CALENDARS = {
     },
 }
 
+KEYS = {
+    'ACTORS' : 'Actors',
+    'AREA' : 'Area',
+    'BEGIN' : 'Begin',
+    'CALENDAR' : 'Calendar',
+    'DESCRIPTION' : 'Description',
+    'DISPLAYNAME' : 'Display Name',
+    'END' : 'End',
+    'EVENTS' : 'Events',
+    'FEMALE' : 'Female',
+    'FILE' : 'File Name',
+    'MALE' : 'Male',
+    'NAME' : 'Name',
+    'PERIODS' : 'Periods',
+    'SUBPERIOD' : 'Subperiod',
+    'UNIT' : 'Unit',
+}
+
+AREAS = {
+    'ASSYRIA' : 'Assyria',
+    'BABYLONIA' : 'Babylonia',
+    'EGYPT' : 'Egypt',
+    'ISRAEL' : 'Israel',
+    'ANE' : 'Ancient Near East',
+}
+
+# Date and time units from https://numpy.org/doc/stable/reference/arrays.datetime.html
+DATETIMES = {
+    'ATTOSECOND' : 'as',
+    'DAY' : 'D',
+    'FEMTOSECOND' : 'fs',
+    'HOUR' : 'h',
+    'MICROSECOND' : 'us',
+    'MILLISECOND' : 'ms',
+    'MINUTE' : 'm',
+    'MONTH' : 'M',
+    'NANOSECOND' : 'ns',
+    'PICOSECOND' : 'ps',
+    'SECOND' : 's',
+    'WEEK' : 'W',
+    'YEAR' : 'Y',
+}
+
+CHRONOLOGIES = {
+    'BYZANTINE' : {KEYS['DESCRIPTION'] : 'LXX', KEYS['FILE'] : 'chronologies/byzantine.txt'},
+    'SMITH': {KEYS['DESCRIPTION'] : 'ABR', KEYS['FILE'] : 'chronologies/smith.txt'},
+    'PETROVICH' : {KEYS['DESCRIPTION'] : 'ABR', KEYS['FILE'] : 'chronologies/petrovich.txt'},
+}
+
+
+EVENTS = {
+    'Creation': {'Area' : AREAS['ISRAEL'], 'Text' : 'Genesis 1'},
+    'Flood': {'Area' : AREAS['ISRAEL'], 'Text' : 'Genesis 6-9'},
+    'Babel': {'Area' : AREAS['ISRAEL'], 'Text' : 'Genesis 11'},
+    'Sojourn': {'Area' : AREAS['ISRAEL'], 'Text' : 'Genesis 49'},
+    'Exodus': {'Area' : AREAS['ISRAEL'], 'Text' : 'Exodus'},
+}
+ACTORS = {}
+
+
+
 TEXTS = {}
 
 class Calendar:
@@ -177,44 +144,7 @@ class Calendar:
         self.zeroyear = self.calendar['ZEROYEAR']
         self.usezero = self.calendar['USEZERO']
 
-    def actors(self) -> pd.DataFrame:
-        """Display the ACTORS constants."""
-        return pd.DataFrame.from_dict(ACTORS, orient='index')
 
-
-    def areas(self) -> pd.DataFrame:
-        """Display the AREAS constants."""
-        return pd.DataFrame.from_dict(AREAS, orient='index', columns=['Value'])
-
-
-    def calendars(self) -> pd.DataFrame:
-        """Display the CALENDARS constants."""
-        return pd.DataFrame.from_dict(CALENDARS)
-
-
-    def chronologies(self) -> pd.DataFrame:
-        """Display the CHRONOLOGIES constants."""
-        return pd.DataFrame(CHRONOLOGIES, columns=[self.KEYS['NAME'], self.KEYS['DESCRIPTION'], self.KEYS['FILE']])
-
-
-    def datetimes(self) -> pd.DataFrame:
-        """Display the DATETIMES constants."""
-        return pd.DataFrame.from_dict(DATETIMES, orient='index', columns=['Value'])
-
-
-    def events(self) -> pd.DataFrame:
-        """Display the EVENTS constants."""
-        return pd.DataFrame.from_dict(EVENTS, orient='index')
-
-
-    def keys(self) -> pd.DataFrame:
-        """Display the KEYS constants."""
-        return pd.DataFrame.from_dict(KEYS, orient='index', columns=['Value'])
-
-
-    def periods(self) -> pd.DataFrame:
-        """Display the PERIODS constants."""
-        return pd.DataFrame.from_dict(PERIODS, orient='index')
 
 
     def daysinyear(self, date:str|np.datetime64):
@@ -295,103 +225,16 @@ class Calendar:
             return np.datetime_as_string(date, unit='D')
 
     def load(self, chronologyname: str):
-        for i in CHRONOLOGIES:
-            if i[0] == chronologyname:
-                filename = i[2]
-                break
+        # for i in CHRONOLOGIES:
+        #     if i[0] == chronologyname:
+        #         filename = i[2]
+        #         break
         chronology = {}
-        with open(filename) as file:
+        with open(CHRONOLOGIES[chronologyname][KEYS['FILE']]) as file:
             for i in file:
                 line = ast.literal_eval(i.replace('\n',''))
                 chronology.update(line)
         return chronology
-
-class Actor:
-    """This class identifies properties of an historical individual
-    or some identifable entity undergoing a time-based process.
-    
-    Parameters
-    ----------
-    name: string
-        The full name of the person
-    calendar: Calendar
-        The calendar that will be used for date formatting
-    gender: string (default the value of the constant MALE)
-        The gender of the person
-    birth: string (default '')
-        The date of birth of the person as a string using ISO formatting
-        "YYYY-MM-DDTHH:MM:SS" with added epoch label and negative year for
-        before the epoch
-    death: string (default '')
-        The date of death of the person using ISO formatting as for birth
-    spouse: list (default [])
-        A list of Person objects already defined
-    children: list (default [])
-        A list of Person objects already defined
-
-    Exceptions
-    ----------
-        gender is either value of the constant MALE or or the constant FEMALE
-
-    Examples
-    --------
-
-    """
-
-    def __init__(self,
-                 name: str,
-                 calendar: Calendar = None,
-                 gender: str = None,
-                 birth: str = None,
-                 death: str = None,
-                 spouse: list = [],
-                 children: list = []):
-        self.name = name
-        self.calendar = calendar
-        if gender not in [KEYS['MALE'], KEYS['FEMALE'], None]:
-            raise ValueError(f'The gender must be either "{KEYS['MALE']}" or "{KEYS['FEMALE']}" or None set in KEYS dictionary with KEYSs "MALE" and "FEMALE".')
-        else:
-            self.gender = gender
-        self.birth = birth
-        self.death = death
-        self.spouse = spouse
-        self.children = children
-
-    def __str__(self):
-        spousenames = ''.join([i.name for i in self.spouse]),
-        childrennames = ''.join([i.name for i in self.children])
-        outstring = ''.join([
-            'Name   ',
-            self.name,
-            '\nGender ',
-            self.gender,
-            '\nBirth ',
-            self.calendar.stringdate(self.birth),
-            '\nDeath ',
-            self.calendar.stringdate(self.death),
-            #'\nSpouse ',
-            #spousenames,
-            #'\nChildren ',
-            #childrennames
-        ])
-        return outstring
-        #return f'Name: {self.name}\nBirth: {self.calendar.stringdate(self.birth)}\nDeath {self.calendar.stringdate(self.death)}\nSpouse: {spousenames}\nChildren: {childrennames}'
-
-# class Event:
-#     """The description of an event which can be used by a Chronology.
-#     """
-
-#     def __init__(self, name: str, displayname: str = '', persons: list = []):
-#         self.name = name
-#         if displayname == '':
-#             self.displayname = self.name
-#         else:
-#             self.displayname = displayname
-#         self.persons = persons
-
-#     def __str__(self):
-#         return f'Event: {self.displayname}'
-
 
 class Chronology(Calendar):
     """This class constructs the dictionaries used to store a particular chronology.
@@ -401,67 +244,102 @@ class Chronology(Calendar):
 
     def __init__(self,
                  chronologyname: str = '',
-                 displayname: str = '',
                  description: str = '',
                  calendar: dict = CALENDARS['GREGORIAN']):
         super().__init__(calendar)
-        if chronologyname != '':
-            if chronologyname in [i[0] for i in CHRONOLOGIES]:
-                loaded_chronology = self.load(chronologyname)
-                self.chronologyname = loaded_chronology[KEYS['NAME']]
-                self.displayname = loaded_chronology[KEYS['DISPLAYNAME']]
-                self.description = loaded_chronology[KEYS['DESCRIPTION']]
-                self.calendar = loaded_chronology[KEYS['CALENDAR']]
-                self.events = loaded_chronology[KEYS['EVENTS']]
-                self.periods = loaded_chronology[KEYS['PERIODS']]
-                self.actors = loaded_chronology[KEYS['ACTORS']]
-            else:
-                self.chronologyname = chronologyname
-                CHRONOLOGIES.append([self.chronologyname, description, ''])
-                if displayname == '':
-                    self.displayname = self.chronologyname
-                else:
-                    self.displayname = displayname
-                self.description = description
-                self.events = []
-                self.periods = []
-                self.actors = []
-                self.chronology = {
-                    KEYS['NAME'] : self.chronologyname,
-                    KEYS['DISPLAYNAME'] : self.displayname,
-                    KEYS['DESCRIPTION'] : self.description,
-                    KEYS['CALENDAR'] : self.calendar,
-                    KEYS['EVENTS'] : [],
-                    KEYS['PERIODS'] : [],
-                    KEYS['ACTORS'] : [],
-                }
-        self.dateindex = 0
-        self.textindex = 1
-        self.numericindex = 2
+        self.chronologyname = chronologyname
+        self.description = description
+        self.chronology = {
+            KEYS['NAME'] : self.chronologyname,
+            KEYS['DESCRIPTION'] : self.description,
+            KEYS['CALENDAR'] : self.calendar,
+            KEYS['EVENTS'] : {},
+            KEYS['PERIODS'] : {},
+            KEYS['ACTORS'] : {},
+        }
+        if self.chronologyname not in CHRONOLOGIES.keys():
+            CHRONOLOGIES.update({self.chronologyname : {KEYS['DESCRIPTION'] : self.description, KEYS['FILE'] : ''}})
 
     def __str__(self):
-        eventlist = []
-        for KEYS in self.chronology:
-            eventlist.append([
-                KEYS,
-                self.chronology[KEYS][self.dateindex],
-                self.chronology[KEYS][self.numericindex],
-                self.chronology[KEYS][self.textindex],
-            ])
-        return str(eventlist)
+        return str(self.chronology)
 
     def save(self, filename: str):
         if self.chronologyname != '':
             with open(filename, 'w') as f:
-                for KEYS, value in self.chronology.items():
-                    f.write('{"%s" : "%s"}\n' % (KEYS, value))
-            for i in CHRONOLOGIES:
-                if i[0] == self.chronology[KEYS['NAME']]:
-                    i[2] = filename
-                    break
+                for key, value in self.chronology.items():
+                    f.write('{"%s" : "%s"}\n' % (key, value))
+            CHRONOLOGIES[self.chronologyname][KEYS['FILE']] = filename
         else:
             raise ValueError('The chronology name is the empty string.')
+        
+    # def actors(self) -> pd.DataFrame:
+    #     """Display the ACTORS constants."""
+    #     return pd.DataFrame.from_dict(ACTORS, orient='index')
 
+
+    # def areas(self) -> pd.DataFrame:
+    #     """Display the AREAS constants."""
+    #     return pd.DataFrame.from_dict(AREAS, orient='index', columns=['Value'])
+
+
+    def calendars(self) -> pd.DataFrame:
+        """Display the CALENDARS constants."""
+        return pd.DataFrame.from_dict(CALENDARS)
+
+
+    def chronologies(self) -> pd.DataFrame:
+        """Display the CHRONOLOGIES constants."""
+        return pd.DataFrame.from_dict(CHRONOLOGIES, orient='index')
+
+
+    def datetimes(self) -> pd.DataFrame:
+        """Display the DATETIMES constants."""
+        return pd.DataFrame.from_dict(DATETIMES, orient='index', columns=['Value'])
+
+
+    # def events(self) -> pd.DataFrame:
+    #     """Display the EVENTS constants."""
+    #     return pd.DataFrame.from_dict(EVENTS, orient='index')
+
+
+    def keys(self) -> pd.DataFrame:
+        """Display the KEYS constants."""
+        return pd.DataFrame.from_dict(KEYS, orient='index', columns=['Value'])
+
+
+    # def periods(self) -> pd.DataFrame:
+    #     """Display the PERIODS constants."""
+    #     return pd.DataFrame.from_dict(PERIODS, orient='index')
+
+    def periods(self) -> pd.DataFrame:
+        """Display the periods defined for the chronology."""
+        return pd.DataFrame.from_dict(self.chronology[KEYS['PERIODS']], orient='index')
+    
+    def add_period(self, name: str, area:str, begin: str, end: str):
+        """Add a period to the dictionary."""
+        self.chronology[KEYS['PERIODS']].update({name : {
+            KEYS['AREA'] : area,
+            KEYS['BEGIN'] : begin,
+            KEYS['END'] : end,
+        }})
+
+    def remove_period(self, name):
+        """Remove a period from the dictionary."""
+        self.chronology[KEYS['PERIODS']].pop(name)
+
+    
+    def actors(self) -> pd.DataFrame:
+        """Display the ACTORS constants."""
+        return pd.DataFrame.from_dict(self.chronology[KEYS['ACTORS']], orient='index')
+
+    # def areas(self) -> pd.DataFrame:
+    #     """Display the AREAS constants."""
+    #     return pd.DataFrame.from_dict(self.chronology[KEYS['AREAS']], orient='index', columns=['Value'])
+
+    def events(self) -> pd.DataFrame:
+        """Display the EVENTS constants."""
+        return pd.DataFrame.from_dict(self.chronology[KEYS['EVENTS']], orient='index')
+    
     def add_event(self, event: str, date: str, text: str = ''):
         """Add an event in a chronology and to its event ordering.
         
@@ -608,5 +486,3 @@ class Chronology(Calendar):
         else:
             self.eventorder = events
             return f'The event ordering of the "{self.chronologyname}" has been updated.'
-
-
