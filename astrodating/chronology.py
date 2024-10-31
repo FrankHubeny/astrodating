@@ -9,77 +9,76 @@ using constraints that could lead one to falsify the
 chronology unless the constraints are answered.
 """
 
-
-import ast
-
 import numpy as np
 import pandas as pd
+import ast
+import copy
+
 
 __all__ = [
-    'Calendar',
     'Chronology',
+    'Compare',
 ]
 
 CONSTANTS = {
     'DATETIME_EPOCH': 1970,
+    'COMMENT' : '#',
+    'NEGATIVE' : '-',
+}
+
+
+KEYS = {
+    'ACTORS' : 'ACTORS',
+    'BEGIN' : 'BEGIN',
+    'CALENDAR' : 'CALENDAR',
+    'CHALLENGES' : 'CHALLENGES',
+    'END' : 'END',
+    'EVENTS' : 'EVENTS',
+    'FEMALE' : 'FEMALE',
+    'FILE' : 'FILENAME',
+    'GREGORIAN' : 'Gregorian',
+    'MALE' : 'MALE',
+    'MARKERS' : 'MARKERS',
+    'NAME' : 'NAME',
+    'NEGLABEL' : 'NEG LABEL',
+    'PERIODS' : 'PERIODS',
+    'POSLABEL' : 'POS LABEL',
+    'TEXTS' : 'TEXT',
+    'USEZERO' : 'USE ZERO',
+    'ZEROYEAR' : 'ZERO YEAR',
 }
 
 CALENDARS = {
-    'BEFORE_PRESENT' : {
+    'Before Present' : {
         'NAME' : 'Before Present',
-        'POSLABEL' : '',
-        'NEGLABEL' : ' BP',
-        'ZEROYEAR' : -CONSTANTS['DATETIME_EPOCH'],
-        'USEZERO' : False,
+        'POS LABEL' : '',
+        'NEG LABEL' : ' BP',
+        'ZERO YEAR' : -CONSTANTS['DATETIME_EPOCH'],
+        'USE ZERO' : False,
     },
-    'EXPERIMENT' : {
+    'Experiment' : {
         'NAME' : 'Experiment',
-        'POSLABEL' : '',
-        'NEGLABEL' : '',
-        'ZEROYEAR' : -CONSTANTS['DATETIME_EPOCH'],
-        'USEZERO' : False,
+        'POS LABEL' : '',
+        'NEG LABEL' : '',
+        'Zero Year' : -CONSTANTS['DATETIME_EPOCH'],
+        'USE ZERO' : False,
     },
-    'GREGORIAN' : {
+    'Gregorian' : {
         'NAME' : 'Gregorian',
-        'POSLABEL' : ' AD',
-        'NEGLABEL' : ' BC',
-        'ZEROYEAR' : -CONSTANTS['DATETIME_EPOCH'],
-        'USEZERO' : False,
+        'POS LABEL' : ' AD',
+        'NEG LABEL' : ' BC',
+        'ZERO YEAR' : -CONSTANTS['DATETIME_EPOCH'],
+        'USE ZERO' : False,
     },
-    'SECULAR' : {
+    'Secular' : {
         'NAME' : 'Secular',
-        'POSLABEL' : ' CE',
-        'NEGLABEL' : ' BCE',
-        'ZEROYEAR' : -CONSTANTS['DATETIME_EPOCH'],
-        'USEZERO' : False,
+        'POS LABEL' : ' CE',
+        'NEG LABEL' : ' BCE',
+        'ZERO YEAR' : -CONSTANTS['DATETIME_EPOCH'],
+        'USE ZERO' : False,
     },
 }
 
-KEYS = {
-    'ACTORS' : 'Actors',
-    'AREA' : 'Area',
-    'BEGIN' : 'Begin',
-    'CALENDAR' : 'Calendar',
-    'DESCRIPTION' : 'Description',
-    'DISPLAYNAME' : 'Display Name',
-    'END' : 'End',
-    'EVENTS' : 'Events',
-    'FEMALE' : 'Female',
-    'FILE' : 'File Name',
-    'MALE' : 'Male',
-    'NAME' : 'Name',
-    'PERIODS' : 'Periods',
-    'SUBPERIOD' : 'Subperiod',
-    'UNIT' : 'Unit',
-}
-
-AREAS = {
-    'ASSYRIA' : 'Assyria',
-    'BABYLONIA' : 'Babylonia',
-    'EGYPT' : 'Egypt',
-    'ISRAEL' : 'Israel',
-    'ANE' : 'Ancient Near East',
-}
 
 # Date and time units from https://numpy.org/doc/stable/reference/arrays.datetime.html
 DATETIMES = {
@@ -98,54 +97,180 @@ DATETIMES = {
     'YEAR' : 'Y',
 }
 
-CHRONOLOGIES = {
-    'BYZANTINE' : {KEYS['DESCRIPTION'] : 'LXX', KEYS['FILE'] : 'chronologies/byzantine.txt'},
-    'SMITH': {KEYS['DESCRIPTION'] : 'ABR', KEYS['FILE'] : 'chronologies/smith.txt'},
-    'PETROVICH' : {KEYS['DESCRIPTION'] : 'ABR', KEYS['FILE'] : 'chronologies/petrovich.txt'},
-}
 
+class Compare():
+    """Compare two or more chronologies for the same events.
 
-EVENTS = {
-    'Creation': {'Area' : AREAS['ISRAEL'], 'Text' : 'Genesis 1'},
-    'Flood': {'Area' : AREAS['ISRAEL'], 'Text' : 'Genesis 6-9'},
-    'Babel': {'Area' : AREAS['ISRAEL'], 'Text' : 'Genesis 11'},
-    'Sojourn': {'Area' : AREAS['ISRAEL'], 'Text' : 'Genesis 49'},
-    'Exodus': {'Area' : AREAS['ISRAEL'], 'Text' : 'Exodus'},
-}
-ACTORS = {}
+    Routines
+    --------
 
+    See Also
+    --------
+    `Chronology`: The compared chronologies being were created or read
+        from files using this class.  
 
+    References
+    ----------
 
-TEXTS = {}
-
-class Calendar:
-    """This class defines the calendar system in which the chronology will be built.
-    By default the calendar will be the Gregorian calendar with AD/BC KEYS.
+    Examples
+    --------
+    The following example compares James Ussher's history of the world
+    with a modern version of the older Byzantine church chronology.
+    The challenges by each of these chronologies are used
     """
 
-    def __init__(self, calendar: dict = CALENDARS['GREGORIAN']):
-        """Parameters to be used for the calendar in which this chronology is constructed
+    def __init__(self, chronologies: list):
+        self.chronologies = chronologies
 
-        Parameters
-        ----------
-        calendar: string (default 'Gregorian')
-            The calendar that will be used to display and input dates.  All dates are
-            handled through NumPy's datetime64, but the display and put are in the user's
-            normal calendar.  The default is the ISO format of the date and time
-            with an optional 'AD' or 'BC' label.  There is no `year zero`.
+    
 
-        """
-        self.calendar = calendar
-        self.calendarname = self.calendar['NAME']
-        self.poslabel = self.calendar['POSLABEL']
-        self.poslabellen = len(self.poslabel)
-        self.neglabel = self.calendar['NEGLABEL']
-        self.neglabellen = len(self.neglabel)
-        self.zeroyear = self.calendar['ZEROYEAR']
-        self.usezero = self.calendar['USEZERO']
+class Chronology():
+    """Construct a dictionary to represent a chronology.
+
+    The tools provide for storing dates associated with periods and events.
+    - One can name an actor with an event.  
+    - One can add a defense for each date to answer a challenge.  
+    - One can add a challenge to argue against a competing chronology.
+    - One can save the chronology to a human readable file.
+    - The file may be modified with a text editor.
+    - One can retrieve the dictionary from a file to continue building it.
+
+    Routines
+    --------
+
+    See Also
+    --------
+    `Compare`: After two competing Chronologies have been constructed
+        with defenses and challenges they may be compared with the
+        visualization tools in this class.
+
+    References
+    ----------
+    - Introduction to Calendars: https://aa.usno.navy.mil/faq/calendars Accessed on Oct 30, 2024
+
+    Examples
+    --------
+    The first two examples show two competing chronologies for biblical history.
+
+    The following would construct a brief chronology based on James Ussher's history.
+    It also provides a defense against and a challenge for the older Byzantine chronology.
+
+    The following constructs a brief chronology based on the Byzantine chronology.
+    It contains a defense against and a challenge for the Ussher's history.
+
+    The next two examples show to competing chronologies based on periods
+    for the Ancient Near East.
+
+    The following would construct a brief chronology as the basis of a genealogy.
+
+
+    The following would construct a brief chronology of the decay of uranian-238.
+
+    The following chronology provides a brief history of China using the
+    Chinese calendar.
+
+    The following example converts the above chronology of China to a
+    Gregorian calendar.
+
+    The following chronology provides a brief history of Islam using the
+    Islamic calendar.
+
+    The following example converts the above chronology of Islam to a
+    secular calendar using 'CE' rather than 'AD' labels.
 
 
 
+
+    """
+
+    def __init__(self,
+                 chronologyname: str = '',
+                 filename: str = '',
+                 cal: str = 'Gregorian'):
+        if chronologyname == '' and filename == '':
+            raise ValueError('The chronology has neither a name nor a file to load.')
+        if chronologyname != '' and filename != '':
+            raise ValueError(f'Both a chronology name "{chronologyname}" and a filename "{filename}" have been specified, but only one can be used.')
+        self.comments = []
+        self.filename = filename
+        self.name = chronologyname
+        self.calendar = cal
+        self.dictionaries = [
+            KEYS['EVENTS'], 
+            KEYS['PERIODS'], 
+            KEYS['ACTORS'], 
+            KEYS['TEXTS'], 
+            KEYS['CHALLENGES'], 
+            KEYS['MARKERS']
+        ]
+        if chronologyname != '':
+            self.chronology = {
+                KEYS['NAME'] : chronologyname,
+                KEYS['CALENDAR'] : cal,
+                KEYS['POSLABEL'] : CALENDARS[cal][KEYS['POSLABEL']],
+                KEYS['NEGLABEL'] : CALENDARS[cal][KEYS['NEGLABEL']],
+                KEYS['ZEROYEAR'] : CALENDARS[cal][KEYS['ZEROYEAR']],
+                KEYS['USEZERO'] : CALENDARS[cal][KEYS['USEZERO']],
+                KEYS['EVENTS'] : {},
+                KEYS['PERIODS'] : {},
+                KEYS['ACTORS'] : {},
+                KEYS['TEXTS'] : {},
+                KEYS['CHALLENGES'] : {},
+                KEYS['MARKERS'] : {},
+            }
+            self.poslabel = CALENDARS[cal][KEYS['POSLABEL']]
+            self.poslabellen = len(self.poslabel)
+            self.neglabel = CALENDARS[cal][KEYS['NEGLABEL']]
+            self.neglabellen = len(self.neglabel)
+        else:
+            self.chronology = {}
+            with open(filename) as file:
+                for line in file:
+                    if line[0] == CONSTANTS['COMMENT']:
+                        self.comments.append(line)
+                    else:  
+                        self.chronology.update(ast.literal_eval(line))
+                
+
+    def __str__(self):
+        return str(self.chronology)
+    
+    # def load(self, chronologyname: str):
+    #     chronology = {}
+    #     with open(CHRONOLOGIES[chronologyname][KEYS['FILE']]) as file:
+    #         for i in file:
+    #             line = ast.literal_eval(i.replace('\n','').replace('"{','{').replace('}"','}'))
+    #             if line[0] == CONSTANTS['COMMENT']:
+    #                 self.comments.append(line)
+    #             else:
+    #                 chronology.update(line)
+    #         chronology.update({KEYS['PERIODS'] : ast.literal_eval(chronology[KEYS['PERIODS']])})
+    #     return chronology
+
+    def save(self, filename: str = ''):
+        if filename == '':
+            if self.filename == '':
+                raise ValueError(f'No file name has been provided.')
+            else:
+                file = self.filename
+        else:
+            file=filename
+        with open(file, 'w') as f:
+            for i in self.comments:
+                f.write('%s\n' % i)
+            for key, value in self.chronology.items():
+                if isinstance(value, dict):
+                    f.write("{'%s' : %s}\n" % (key, value))
+                else:
+                    f.write("{'%s' : '%s'}\n" % (key, value))
+
+        
+    def comment(self, line: str):
+        self.comments.append(''.join([CONSTANTS['COMMENT'], ' ', line]))
+        
+    def show_comments(self):
+        for i in self.comments:
+            print(i[2:])
 
     def daysinyear(self, date:str|np.datetime64):
         """A procedure to count number of days in a Gregorian year given the year.
@@ -159,7 +284,7 @@ class Calendar:
         --------
 
         """
-        if type(date) == str:
+        if isinstance(date, str):
             year = np.datetime64(date,'Y').astype('int') + 1970
         else:
             year = date['Y'].astype('int') + 1970
@@ -191,7 +316,7 @@ class Calendar:
 
         """
         # Look for errors
-        if date[0] == '-':
+        if date[0] == CONSTANTS['NEGATIVE']:
             if date[-self.neglabellen:] == self.neglabel:
                 raise ValueError(f'The year is negative but the date contains a negative label "{date[-self.neglabellen:]}"')
             elif date[-self.poslabellen:] == self.poslabel:
@@ -223,63 +348,23 @@ class Calendar:
             return ''
         else:
             return np.datetime_as_string(date, unit='D')
+            
+    
 
-    def load(self, chronologyname: str):
-        # for i in CHRONOLOGIES:
-        #     if i[0] == chronologyname:
-        #         filename = i[2]
-        #         break
-        chronology = {}
-        with open(CHRONOLOGIES[chronologyname][KEYS['FILE']]) as file:
-            for i in file:
-                line = ast.literal_eval(i.replace('\n',''))
-                chronology.update(line)
-        return chronology
-
-class Chronology(Calendar):
-    """This class constructs the dictionaries used to store a particular chronology.
-    It builds actors, events and periods.  It saves the dictionaries.  It provides
-    visual adis to viewing the chronology.
-    """
-
-    def __init__(self,
-                 chronologyname: str = '',
-                 description: str = '',
-                 calendar: dict = CALENDARS['GREGORIAN']):
-        super().__init__(calendar)
-        self.chronologyname = chronologyname
-        self.description = description
-        self.chronology = {
-            KEYS['NAME'] : self.chronologyname,
-            KEYS['DESCRIPTION'] : self.description,
-            KEYS['CALENDAR'] : self.calendar,
-            KEYS['EVENTS'] : {},
-            KEYS['PERIODS'] : {},
-            KEYS['ACTORS'] : {},
-        }
-        if self.chronologyname not in CHRONOLOGIES.keys():
-            CHRONOLOGIES.update({self.chronologyname : {KEYS['DESCRIPTION'] : self.description, KEYS['FILE'] : ''}})
-
-    def __str__(self):
-        return str(self.chronology)
-
-    def save(self, filename: str):
-        if self.chronologyname != '':
-            with open(filename, 'w') as f:
-                for key, value in self.chronology.items():
-                    f.write('{"%s" : "%s"}\n' % (key, value))
-            CHRONOLOGIES[self.chronologyname][KEYS['FILE']] = filename
-        else:
-            raise ValueError('The chronology name is the empty string.')
+    # def name(self):
+    #     """Display the name of the chronology.
         
-    # def actors(self) -> pd.DataFrame:
-    #     """Display the ACTORS constants."""
-    #     return pd.DataFrame.from_dict(ACTORS, orient='index')
-
-
-    # def areas(self) -> pd.DataFrame:
-    #     """Display the AREAS constants."""
-    #     return pd.DataFrame.from_dict(AREAS, orient='index', columns=['Value'])
+    #     Returns
+    #     -------
+    #     string
+    #         The name of the chrono0logy.
+    #     """
+    #     return str(self.chronology[KEYS['NAME']])
+    
+    
+    # def calendar(self):
+    #     """Display the name of the calendar used in the chronology."""
+    #     return self.chronology[KEYS['CALENDAR']]
 
 
     def calendars(self) -> pd.DataFrame:
@@ -287,19 +372,9 @@ class Chronology(Calendar):
         return pd.DataFrame.from_dict(CALENDARS)
 
 
-    def chronologies(self) -> pd.DataFrame:
-        """Display the CHRONOLOGIES constants."""
-        return pd.DataFrame.from_dict(CHRONOLOGIES, orient='index')
-
-
     def datetimes(self) -> pd.DataFrame:
         """Display the DATETIMES constants."""
         return pd.DataFrame.from_dict(DATETIMES, orient='index', columns=['Value'])
-
-
-    # def events(self) -> pd.DataFrame:
-    #     """Display the EVENTS constants."""
-    #     return pd.DataFrame.from_dict(EVENTS, orient='index')
 
 
     def keys(self) -> pd.DataFrame:
@@ -307,21 +382,44 @@ class Chronology(Calendar):
         return pd.DataFrame.from_dict(KEYS, orient='index', columns=['Value'])
 
 
-    # def periods(self) -> pd.DataFrame:
-    #     """Display the PERIODS constants."""
-    #     return pd.DataFrame.from_dict(PERIODS, orient='index')
-
     def periods(self) -> pd.DataFrame:
-        """Display the periods defined for the chronology."""
-        return pd.DataFrame.from_dict(self.chronology[KEYS['PERIODS']], orient='index')
+        """Display the periods defined for the chronology if there are any."""
+        if self.chronology[KEYS['PERIODS']] is not None:
+            return pd.DataFrame.from_dict(self.chronology[KEYS['PERIODS']], orient='index')
+        else:
+            print(f'The chronology "{self.name}" has no periods.')
+
+    def periods_pop(self, pops: list) -> pd.DataFrame:
+        """Display the periods defined for the chronology if there are any.
+        
+        Parameter
+        ---------
+        pops: list
+            A list of keys to be temporarily removed before displaying the periods.
+            
+        """
+        dictionary = copy.deepcopy(dict(self.chronology[KEYS['PERIODS']]))
+        for i in pops:
+            for j in dictionary:
+                try:
+                    dictionary[j].pop(i)
+                except KeyError:
+                    break
+        return pd.DataFrame.from_dict(dictionary, orient='index')
+
     
-    def add_period(self, name: str, area:str, begin: str, end: str):
+    def add_period(self, name: str, begin: str, end: str, keyvalues: dict = {}):
         """Add a period to the dictionary."""
-        self.chronology[KEYS['PERIODS']].update({name : {
-            KEYS['AREA'] : area,
-            KEYS['BEGIN'] : begin,
-            KEYS['END'] : end,
-        }})
+        for i in keyvalues.keys():
+            if i in KEYS.keys():
+                raise ValueError(f'The key "{i}" is a reserved key.')
+        else:
+            self.chronology[KEYS['PERIODS']].update({name : {
+                KEYS['BEGIN'] : begin,
+                KEYS['END'] : end,
+            }})
+            if len(keyvalues) > 0:
+                self.chronology[KEYS['PERIODS']][name].update(keyvalues)
 
     def remove_period(self, name):
         """Remove a period from the dictionary."""
@@ -330,15 +428,18 @@ class Chronology(Calendar):
     
     def actors(self) -> pd.DataFrame:
         """Display the ACTORS constants."""
-        return pd.DataFrame.from_dict(self.chronology[KEYS['ACTORS']], orient='index')
+        if len(self.chronology[KEYS['ACTORS']]) > 0:
+            return pd.DataFrame.from_dict(self.chronology[KEYS['ACTORS']], orient='index')
+        else:
+            print(f'The chronology "{self.name}" has no actors.')
 
-    # def areas(self) -> pd.DataFrame:
-    #     """Display the AREAS constants."""
-    #     return pd.DataFrame.from_dict(self.chronology[KEYS['AREAS']], orient='index', columns=['Value'])
 
     def events(self) -> pd.DataFrame:
         """Display the EVENTS constants."""
-        return pd.DataFrame.from_dict(self.chronology[KEYS['EVENTS']], orient='index')
+        if len(self.chronology[KEYS['EVENTS']]) > 0:
+            return pd.DataFrame.from_dict(self.chronology[KEYS['EVENTS']], orient='index')
+        else:
+            print(f'The chronology "{self.name}" has no events.')
     
     def add_event(self, event: str, date: str, text: str = ''):
         """Add an event in a chronology and to its event ordering.
@@ -366,14 +467,14 @@ class Chronology(Calendar):
         --------
 
         """
-        if self.chronologyname == '':
+        if self.name == '':
             raise ValueError('The chronology name is empty.')
         else:
             numericdate = super().numeric(date)
             numericdatetype = type(numericdate)
             self.chronology[event] = [date, super().numeric(date), text]
             self.eventorder.append(event)
-            return(f'Event "{event}" with date "{date}" and text "{text}" has been added to the "{self.chronologyname}" chronology.')
+            return(f'Event "{event}" with date "{date}" and text "{text}" has been added to the "{self.name}" chronology.')
 
     def update_event(self, event: str, date: str, text: str = ''):
         """Update an event in a chronology.
@@ -401,11 +502,11 @@ class Chronology(Calendar):
         --------
 
         """
-        if self.chronologyname == '':
+        if self.name == '':
             raise ValueError('The chronology name is empty.')
         else:
             self.chronology.update({event : [date, super().numeric(date), text]})
-            return(f'Event "{event}" with date "{date}" and text "{text}" has been added to the "{self.chronologyname}" chronology.')
+            return(f'Event "{event}" with date "{date}" and text "{text}" has been added to the "{self.name}" chronology.')
 
     def remove_event(self, event: str):
         """Remove an event from a chronology and its event ordering.
@@ -421,31 +522,13 @@ class Chronology(Calendar):
             A message stating that the event has been removed from the chronology.
 
         """
-        if self.chronologyname == '':
+        if self.name == '':
             raise ValueError('The chronology name is empty.')
         else:
             self.chronology.pop(event)
             self.eventorder.remove(event)
-            return(f'Event "{event}" has been removed from the "{self.chronologyname}" chronology.')
+            print(f'Event "{event}" has been removed from the "{self.name}" chronology.')
 
-    def show_event(self, vertical: bool = False):
-        """Display the chronology as a table.  The default display will show
-        the metadata associated with the chronology.  The vertical display
-        will only show the events in their current event ordering.
-        
-        Parameters
-        ----------
-        vertical: boolean
-            Display the events vertically rather than horizontally
-
-        Examples
-        --------
-
-        """
-        if self.chronologyname == '':
-            raise ValueError('The chronology name is empty.')
-        else:
-            return pd.DataFrame(self.chronology)
 
     def show_eventorder(self):
         """Display a list of events in the order they will be shown.
@@ -459,7 +542,7 @@ class Chronology(Calendar):
         --------
 
         """
-        if self.chronologyname == '':
+        if self.chronology[KEYS['NAME']] == '':
             raise ValueError('The chronology name is empty.')
         else:
             return self.eventorder
@@ -481,8 +564,74 @@ class Chronology(Calendar):
         --------
 
         """
-        if self.chronologyname == '':
+        if self.chronology[KEYS['NAME']] == '':
             raise ValueError('The chronology name is empty.')
         else:
             self.eventorder = events
-            return f'The event ordering of the "{self.chronologyname}" has been updated.'
+            return f'The event ordering of the "{self.name}" has been updated.'
+        
+    def show(self):
+        """Show the entire chronology."""
+        pass
+    
+    def remove_key(self, dictname: str, key: str):
+        """Revove a key from a dictionary of the chronology.  
+        
+        Reserved keys cannot be removed, but they can be hiddened when displaying
+        the dictionary or entire chronology.
+
+        Parameters
+        ----------
+        dictname: str
+            The name of the dictionary within the chronology where the key will be removed
+        key: str
+            The name of the key to be removed from the dictionary
+        
+        """
+        if key in KEYS.keys():
+            raise ValueError(f'The key "{key}" is a reserved key and cannot be removed.')
+        elif key not in self.chronology[dictname].keys():
+            raise ValueError(f'The key "{key}" is not in the chronology dictionary "{dictname}".')
+        else:
+            self.chronology[dictname].pop(key)
+
+
+    def to(self, calendar: str):
+        """Convert the calendar of the chronology to anther calendar.
+        
+        Parameter
+        ---------
+        calendar: str
+            The key of the calendar to convert the current calendar to.
+        """
+        pass
+
+    def combine(self, chronologyname: str, chronology: dict, comments: list):
+        """Combine the current chronology with another one.
+        
+        Parameters
+        ----------
+        chronology: dict
+            The chronology to combine with the present one.
+        """
+
+        newchron = Chronology(chronologyname=chronologyname, cal=self.calendar)
+        if self.calendar == chronology[KEYS['CALENDAR']]:
+            newchron.comments.extend(self.comments)
+            newchron.comments.extend(comments)
+            for key in self.dictionaries:
+                newchron.chronology[key].update(self.chronology[key])
+                newchron.chronology[key].update(chronology[key])
+            return newchron
+        else:
+            raise ValueError(f'The calendars dont match')
+            
+        
+        # firstcalendar = chronologies[0][KEYS['CALENDAR'][KEYS['NAME']]]
+        # for i in chronologies:
+        #     if i[KEYS['CALENDAR']][KEYS['NAME']] != firstcalendar:
+        #          raise ValueError(f'More than one calendar are in use: "{firstcalendar}" and "{i[KEYS['CALENDAR']][KEYS['NAME']]}"')
+        # combined = Chronology(chronologyname)
+        # for i in chronologies:
+        #     combined.chronology.update(i)
+        # combined.save(filename)
